@@ -39,21 +39,21 @@ def handle_data(data):
 def entropy_helper(frac):
     if frac == 0:
         return 0
-    return -frac * math.log(frac)
 
-def calculate_entropy(spam_subsets, not_spam_subsets, total):
+    return -(frac) * math.log(frac, 2)
+
+def calculate_entropy(spam_subsets, not_spam_subsets, total, k=2):
     avg_entropy = 0
 
-    for i in range(0, 2):
+    for i in range(0, k):
         p = spam_subsets[i]
         n = not_spam_subsets[i]
 
         subset_len = len(p) + len(n)
-
         entropy = entropy_helper(len(p)/subset_len) + entropy_helper(len(n)/subset_len)
-        avg_entropy += subset_len / total * entropy
+        avg_entropy += (subset_len / total) * entropy
 
-    print(avg_entropy)
+    return avg_entropy
 
 
 def main():
@@ -71,8 +71,14 @@ def main():
     spam = np.array(spam)
     not_spam = np.array(not_spam)
 
-    print(spam.shape)
 
+    #entropy calculation test
+    #spam_subsets = [ [11, 13], [22], []]
+    #not_spam_subsets = [ [12], [22], [32]]
+
+    #calculate_entropy(spam_subsets, not_spam_subsets, 6, k=)
+
+    node = (1, None, [], [])
     for i in range(0, train_x.shape[1]):
         spam_features = spam[:, i]
         not_spam_features = not_spam[:, i]
@@ -93,15 +99,32 @@ def main():
                 not_spam_subsets[1].append(feature)
 
         total = len(spam_features) + len(not_spam_features)
-        calculate_entropy(spam_subsets, not_spam_subsets, total)
+        feature_entropy = calculate_entropy(spam_subsets, not_spam_subsets, total)
+
+        if feature_entropy < node[0]:
+            p0 = spam_subsets[0]
+            p1 = spam_subsets[1]
+            n0 = not_spam_subsets[0]
+            n1 = not_spam_subsets[1]
+
+            print("\n", i, "\n")
+            print("spam0", len(p0))
+            print("spam1", len(p1))
+            print("not_spam0", len(n0))
+            print("not_spam1", len(n1))
+
+            total_with_feature = len(p1) + len(n1)
+            total_without_feature = len(p0) + len(n0)
+
+            print("total_with_feature", total_with_feature)
+            print("total_without_feature", total_without_feature)
+            print("total samples", len(train_x))
 
 
-        #return
-    #for i, features in enumerate(train_x.T):
-    #    choose_best(features, train_y)
-    #    return
-        #for
-    #choose_best(train_x.T[4], train_y)
+            node = (feature_entropy, i, spam_subsets, not_spam_subsets)
+
+    root_node = node
+
 
 
 
