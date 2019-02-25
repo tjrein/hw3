@@ -1,5 +1,6 @@
 import numpy as np
 import math
+import random
 from math import ceil
 
 np.set_printoptions(suppress=True)
@@ -38,7 +39,7 @@ def standardize(features, mean=None, std=None):
     return features
 
 def handle_data(data):
-    np.random.seed(6)
+    np.random.seed(0)
     np.random.shuffle(data)
 
     range = ceil(len(data) * 2/3)
@@ -96,7 +97,6 @@ def choose_best(observations, features):
             else:
                 not_spam_subsets[1].append(not_spam[j])
 
-
         spam_subsets = np.array(spam_subsets)
         not_spam_subsets = np.array(not_spam_subsets)
 
@@ -104,30 +104,35 @@ def choose_best(observations, features):
         feature_entropy = calculate_entropy(spam_subsets, not_spam_subsets, total)
 
         if feature_entropy <= node[0]:
-            print("WHAT THE SHIT")
             node = (feature_entropy, i, spam_subsets, not_spam_subsets)
 
     return node
 
+def generate_guess(observations):
+    not_spam = len(observations[0])
+    spam = len(observations[1])
+    percent_spam = spam / (not_spam + spam)
+    percent_not_spam = not_spam / (not_spam + spam)
+    #random.seed(0)
+    choice = random.choices(population=[0, 1], weights=[percent_not_spam, percent_spam], k=1)[0]
+    return choice
 
-def dtl(observations, features, default='Spam'):
-    print("features", features)
-    print("observations0", observations[0].shape)
-    print("observations1", observations[1].shape)
-
+def dtl(observations, features, default=0):
     if not len(observations):
-        return Node(0)
+        return Node(default)
     if not len(observations[0]):
         return Node(1)
     if not len(observations[1]):
         return Node(0)
     if not len(features):
-        return Node(0)
+        if len(observations[0]) > len(observations[1]):
+            return Node(0)
+        else:
+            return Node(1)
 
     best_attribute = choose_best(observations, features)
     feature_ind = best_attribute[1]
 
-    print("FEATURE IND", feature_ind)
     tree = Node(feature_ind)
     features.remove(feature_ind)
 
@@ -138,34 +143,30 @@ def dtl(observations, features, default='Spam'):
     n0 = not_spam_subsets[0]
     n1 = not_spam_subsets[1]
 
-
     total_with_feature = len(p1) + len(n1)
     total_without_feature = len(p0) + len(n0)
 
-
-    for i in (1, 0):
+    for i in (0, 1):
         spam = np.array(spam_subsets[i])
         not_spam = np.array(not_spam_subsets[i])
 
         observations = [not_spam, spam]
 
-        if i == 1:
+        if i == 0:
             tree.add_left_child(dtl(observations, features))
         else:
             tree.add_right_child(dtl(observations, features))
 
     return tree
 
-
 def traverse_tree(tree, obs):
     if tree.left_child is None and tree.right_child is None:
         return tree.data
 
-    if obs[tree.data] > 0:
+    if obs[tree.data] < 0:
         return traverse_tree(tree.left_child, obs)
     else:
         return traverse_tree(tree.right_child, obs)
-
 
 def main():
     data = np.genfromtxt('./spambase.data', delimiter=',')
