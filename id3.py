@@ -57,12 +57,7 @@ def calculate_entropy(spam_subsets, not_spam_subsets, total, k=2):
         p = spam_subsets[i]
         n = not_spam_subsets[i]
 
-        print("p", len(p))
-        print("n", len(n))
-
-
         subset_len = len(p) + len(n)
-        print("subset_len", subset_len)
 
         entropy = 0
 
@@ -102,7 +97,6 @@ def choose_best(observations, features):
         not_spam_subsets = np.array(not_spam_subsets)
 
         total = len(spam_features) + len(not_spam_features)
-        print("I", i)
         feature_entropy = calculate_entropy(spam_subsets, not_spam_subsets, total)
 
         if feature_entropy < node[0]:
@@ -113,15 +107,17 @@ def choose_best(observations, features):
 
 def dtl(observations, features, default='Spam'):
     print("features", features)
-    print("observations0", len(observations[0]))
-    print("observations1", len(observations[1]))
+    print("observations0", observations[0].shape)
+    print("observations1", observations[1].shape)
 
     if not len(observations):
         return default
     if not len(observations[0]):
-        return 1
+        print("BASE CASE", 1)
+        return
     if not len(observations[1]):
-        return 0
+        print("BASE_CASE", 0)
+        return
     if not len(features):
         return 1
 
@@ -148,16 +144,15 @@ def dtl(observations, features, default='Spam'):
     total_with_feature = len(p1) + len(n1)
     total_without_feature = len(p0) + len(n0)
 
-    #print("total_with_feature", total_with_feature)
-    #print("total_without_feature", total_without_feature)
 
-    for i in range(0, 2):
+    for i in (1, 0):
+        print("i for", feature_ind, i)
         spam = np.array(spam_subsets[i])
         not_spam = np.array(not_spam_subsets[i])
 
         observations = [not_spam, spam]
 
-        return dtl(observations, features)
+        dtl(observations, features)
 
     return "shit"
 
@@ -177,8 +172,8 @@ def main():
     spam = np.array(spam)
     not_spam = np.array(not_spam)
 
-    observations = [not_spam, spam]
 
+    observations = [not_spam, spam]
     dtl(observations, list(range(0,57)))
 
 if __name__ == '__main__':
