@@ -36,33 +36,72 @@ def handle_data(data):
 
     return isolate_sets(training, testing)
 
-def choose_best(features, labels, used=None):
-    e0 = { 'pos': 0, 'neg': 0 }
-    e1 = { 'pos': 0, 'neg': 0 }
+def entropy_helper(frac):
+    if frac == 0:
+        return 0
+    return -frac * math.log(frac)
 
-    for i, feature in enumerate(features):
-        if feature < 0:
-            if labels[i] == 1:
-                e0['pos'] += 1
-            else:
-                e1['neg'] += 1
-        else:
-            if labels[i] == 1:
-                e1['pos'] += 1
-            else:
-                e1['neg'] += 1
+def calculate_entropy(spam_subsets, not_spam_subsets, total):
+    avg_entropy = 0
 
-    print("e0", e0)
-    print("e1", e1)
+    for i in range(0, 2):
+        p = spam_subsets[i]
+        n = not_spam_subsets[i]
+
+        subset_len = len(p) + len(n)
+
+        entropy = entropy_helper(len(p)/subset_len) + entropy_helper(len(n)/subset_len)
+        avg_entropy += subset_len / total * entropy
+
+    print(avg_entropy)
 
 
 def main():
     data = np.genfromtxt('./spambase.data', delimiter=',')
     train_x, train_y, test_x, test_y  = handle_data(data)
 
-    x = np.array([["green", 2, True], ["yellow", 4, True]])
+    spam = []
+    not_spam = []
+    for i, obs in enumerate(train_x):
+        if train_y[i] == 1:
+            spam.append(obs)
+        else:
+            not_spam.append(obs)
 
-    choose_best(train_x.T[0], train_y)
+    spam = np.array(spam)
+    not_spam = np.array(not_spam)
+
+    print(spam.shape)
+
+    for i in range(0, train_x.shape[1]):
+        spam_features = spam[:, i]
+        not_spam_features = not_spam[:, i]
+
+        #create subsets
+        spam_subsets = [ [], [] ]
+        for feature in spam_features:
+            if feature < 0:
+                spam_subsets[0].append(feature)
+            else:
+                spam_subsets[1].append(feature)
+
+        not_spam_subsets = [ [], [] ]
+        for feature in not_spam_features:
+            if feature < 0:
+                not_spam_subsets[0].append(feature)
+            else:
+                not_spam_subsets[1].append(feature)
+
+        total = len(spam_features) + len(not_spam_features)
+        calculate_entropy(spam_subsets, not_spam_subsets, total)
+
+
+        #return
+    #for i, features in enumerate(train_x.T):
+    #    choose_best(features, train_y)
+    #    return
+        #for
+    #choose_best(train_x.T[4], train_y)
 
 
 
