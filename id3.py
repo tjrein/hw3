@@ -7,10 +7,14 @@ np.set_printoptions(suppress=True)
 class Node(object):
     def __init__(self, data):
         self.data = data
-        self.children = []
+        self.left_child = None
+        self.right_child = None
 
-    def add_child(self, obj):
-        self.children.append(obj)
+    def add_left_child(self, obj):
+        self.left_child = obj
+
+    def add_right_child(self, obj):
+        self.right_child = obj
 
 def isolate_sets(training, testing):
     train_y, train_x = separate_data(training)
@@ -34,7 +38,7 @@ def standardize(features, mean=None, std=None):
     return features
 
 def handle_data(data):
-    np.random.seed(0)
+    np.random.seed(6)
     np.random.shuffle(data)
 
     range = ceil(len(data) * 2/3)
@@ -99,7 +103,8 @@ def choose_best(observations, features):
         total = len(spam_features) + len(not_spam_features)
         feature_entropy = calculate_entropy(spam_subsets, not_spam_subsets, total)
 
-        if feature_entropy < node[0]:
+        if feature_entropy <= node[0]:
+            print("WHAT THE SHIT")
             node = (feature_entropy, i, spam_subsets, not_spam_subsets)
 
     return node
@@ -111,20 +116,18 @@ def dtl(observations, features, default='Spam'):
     print("observations1", observations[1].shape)
 
     if not len(observations):
-        return default
+        return Node(0)
     if not len(observations[0]):
-        print("BASE CASE", 1)
-        return
+        return Node(1)
     if not len(observations[1]):
-        print("BASE_CASE", 0)
-        return
+        return Node(0)
     if not len(features):
-        return 1
+        return Node(0)
 
     best_attribute = choose_best(observations, features)
     feature_ind = best_attribute[1]
 
-    print(feature_ind)
+    print("FEATURE IND", feature_ind)
     tree = Node(feature_ind)
     features.remove(feature_ind)
 
@@ -135,26 +138,33 @@ def dtl(observations, features, default='Spam'):
     n0 = not_spam_subsets[0]
     n1 = not_spam_subsets[1]
 
-    #print("\n", feature_ind, "\n")
-    #print("spam0", len(p0))
-    #print("spam1", len(p1))
-    #print("not_spam0", len(n0))
-    #print("not_spam1", len(n1))
 
     total_with_feature = len(p1) + len(n1)
     total_without_feature = len(p0) + len(n0)
 
 
     for i in (1, 0):
-        print("i for", feature_ind, i)
         spam = np.array(spam_subsets[i])
         not_spam = np.array(not_spam_subsets[i])
 
         observations = [not_spam, spam]
 
-        dtl(observations, features)
+        if i == 1:
+            tree.add_left_child(dtl(observations, features))
+        else:
+            tree.add_right_child(dtl(observations, features))
 
-    return "shit"
+    return tree
+
+
+def traverse_tree(tree, obs):
+    if tree.left_child is None and tree.right_child is None:
+        return tree.data
+
+    if obs[tree.data] > 0:
+        return traverse_tree(tree.left_child, obs)
+    else:
+        return traverse_tree(tree.right_child, obs)
 
 
 def main():
@@ -172,9 +182,42 @@ def main():
     spam = np.array(spam)
     not_spam = np.array(not_spam)
 
-
     observations = [not_spam, spam]
-    dtl(observations, list(range(0,57)))
+    tree = dtl(observations, list(range(0,57)))
+
+    labels = []
+    for i, obs in enumerate(test_x):
+        labels.append(traverse_tree(tree, obs))
+
+    tp = 0
+    tn = 0
+    fp = 0
+    fn = 0
+
+    labels = np.array(labels)
+    for x, prediction in enumerate(labels):
+        target = test_y[x]
+
+        if prediction == 1 and target == 1:
+            tp += 1
+
+        if prediction == 1 and target == 0:
+            fp += 1
+
+        if prediction == 0 and target == 0:
+            tn += 1
+
+        if prediction == 0 and target == 1:
+            fn += 1
+
+    print("tp", tp)
+    print("tn", tn)
+    print("fp", fp)
+    print("fn", fn)
+
+    print ("precision", tp / (tp + fp))
+    print ("recall", tp / (tp + fn))
+    print ((tp + tn) / (tp + tn + fp + fn))
 
 if __name__ == '__main__':
     main()
