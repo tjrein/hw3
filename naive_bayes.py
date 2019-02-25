@@ -26,7 +26,7 @@ def standardize(features, mean=None, std=None):
     return features
 
 def handle_data(data):
-    np.random.seed(0)
+    np.random.seed(3)
     np.random.shuffle(data)
 
     range = ceil(len(data) * 2/3)
@@ -43,7 +43,7 @@ def normpdf(x, mean, sd):
     return num/denom
 
 def main():
-    data = np.genfromtxt('./spambase.data', delimiter=',', dtype="uint16")
+    data = np.genfromtxt('./spambase.data', delimiter=',')
     train_x, train_y, test_x, test_y  = handle_data(data)
 
     spam = []
@@ -53,15 +53,16 @@ def main():
             spam.append(obs)
         else:
             not_spam.append(obs)
-    
-    spam_prior = len(spam) / len(train_x)
-    not_spam_prior = len(not_spam) / len(train_x)
 
     spam = np.array(spam)
     not_spam = np.array(not_spam)
 
+    spam_prior = len(spam) / len(train_x)
+    not_spam_prior = len(not_spam) / len(train_x)
+
     spam_mean = np.mean(spam, axis=0)
     spam_std = np.std(spam, axis=0)
+
 
     not_spam_mean = np.mean(not_spam, axis=0)
     not_spam_std = np.std(not_spam, axis=0)
@@ -87,10 +88,37 @@ def main():
         else:
             labels.append(0)
 
-    print("all done")
+    tp = 0
+    tn = 0
+    fp = 0
+    fn = 0
+
     labels = np.array(labels)
-    for x, label in enumerate(labels):
-        print(label, test_y[x])
+    for x, prediction in enumerate(labels):
+        target = test_y[x]
+
+        if prediction == 1 and target == 1:
+            tp += 1
+
+        if prediction == 1 and target == 0:
+            fp += 1
+
+        if prediction == 0 and target == 0:
+            tn += 1
+
+        if prediction == 0 and target == 1:
+            fn += 1
+
+    print("tp", tp)
+    print("tn", tn)
+    print("fp", fp)
+    print("fn", fn)
+
+    print ("precision", tp / (tp + fp))
+    print ("recall", tp / (tp + fn))
+    print ((tp + tn) / (tp + tn + fp + fn))
+
+    print(tn / (tn + fn))
 
 if __name__ == '__main__':
     main()
