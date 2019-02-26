@@ -134,7 +134,6 @@ def dtl(observations, features, default=0):
     feature_ind = best_attribute[1]
 
     tree = Node(feature_ind)
-    features.remove(feature_ind)
 
     spam_subsets, not_spam_subsets = best_attribute[2], best_attribute[3]
 
@@ -147,15 +146,17 @@ def dtl(observations, features, default=0):
     total_without_feature = len(p0) + len(n0)
 
     for i in (0, 1):
+        new_features = features.copy()
+        new_features.remove(feature_ind)
         spam = np.array(spam_subsets[i])
         not_spam = np.array(not_spam_subsets[i])
 
         observations = [not_spam, spam]
 
         if i == 0:
-            tree.add_left_child(dtl(observations, features))
+            tree.add_left_child(dtl(observations, new_features))
         else:
-            tree.add_right_child(dtl(observations, features))
+            tree.add_right_child(dtl(observations, new_features))
 
     return tree
 
