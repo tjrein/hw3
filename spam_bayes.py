@@ -2,8 +2,6 @@ import numpy as np
 from bayes_functions import classify, train
 from data_operations import filter_low_std, handle_data
 
-np.set_printoptions(suppress=True)
-
 def display_performance(labels, test_y):
     tp = 0
     tn = 0

@@ -5,8 +5,6 @@ from math import ceil
 np.set_printoptions(suppress=True)
 
 def isolate_sets(training, testing):
-
-    print("training", training.shape)
     train_y, train_x = separate_data(training)
     test_y, test_x = separate_data(testing)
 

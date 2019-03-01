@@ -19,13 +19,12 @@ def separate_data(data):
     features = data[:, :cutoff]
     return (targets, features)
 
-
 def standardize(features, mean=None, std=None):
     features = (features - mean) / std
     return features
 
 def handle_data(data):
-    np.random.seed(2)
+    np.random.seed(7)
     np.random.shuffle(data)
 
     range = ceil(len(data) * 2/3)
