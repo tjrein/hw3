@@ -22,12 +22,13 @@ def separate_data(data):
     features = data[:, :cutoff]
     return (targets, features)
 
+
 def standardize(features, mean=None, std=None):
     features = (features - mean) / std
     return features
 
 def handle_data(data):
-    np.random.seed(3)
+    np.random.seed(0)
     np.random.shuffle(data)
 
     range = ceil(len(data) * 2/3)
@@ -45,11 +46,16 @@ def initialize_probs(groups):
 
     return class_probs
 
-def normpdf(x, mean, sd):
-    var = float(sd)**2
-    denom = (2*math.pi*var)**.5
-    num = math.exp(-(float(x)-float(mean))**2/(2*var))
-    return num/denom
+def filter_low_std(data):
+    std = data.std(axis=0, ddof=1)
+    remove = [ i for i, val in enumerate(std) if val < 0.1 ]
+    data = np.delete(data, remove, 1)
+
+    return data
+
+def pdf(x, mean, std):
+    pdf = (1 / (std * math.sqrt(2 * math.pi))) * math.exp(-( (x - mean) ** 2 ) / (2 * std ** 2))
+    return pdf
 
 def main():
     data = np.genfromtxt('./CTG.csv', delimiter=',', skip_header=2)
@@ -57,16 +63,15 @@ def main():
     data = np.delete(data, second_last_col, 1)
 
     #data = np.genfromtxt('./spambase.data', delimiter=',')
+    data = filter_low_std(data)
 
     train_x, train_y, test_x, test_y = handle_data(data)
 
     groups = {}
-
     for i, obs in enumerate(train_x):
         label = train_y[i][0]
         if not label in groups:
             groups[label] = { 'observations': [] }
-
         groups[label]['observations'].append(obs)
 
     for key in groups:
@@ -77,16 +82,14 @@ def main():
         groups[key]['prior'] = len(np_obs) / len(train_x)
 
     labels = []
-    for i, obs in enumerate(test_x):
-
+    for obs in test_x:
         class_probs = initialize_probs(groups)
 
         for j, feature in enumerate(obs):
             for key, val in groups.items():
-
                 mean = val['mean'][j]
                 std = val['std'][j]
-                class_probs[key] *= normpdf(feature, mean, std)
+                class_probs[key] *= pdf(feature, mean, std)
 
         labels.append(max(class_probs, key=class_probs.get))
 
@@ -103,7 +106,7 @@ def main():
 
     accuracy = correct / (incorrect + correct)
 
-    print("accuracy: ", accuracy)
+    print("Accuracy: ", accuracy)
 
 
 if __name__ == '__main__':

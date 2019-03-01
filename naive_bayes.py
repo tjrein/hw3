@@ -5,6 +5,8 @@ from math import ceil
 np.set_printoptions(suppress=True)
 
 def isolate_sets(training, testing):
+
+    print("training", training.shape)
     train_y, train_x = separate_data(training)
     test_y, test_x = separate_data(testing)
 
@@ -17,8 +19,9 @@ def isolate_sets(training, testing):
     return (train_x, train_y, test_x, test_y)
 
 def separate_data(data):
-    targets = data[:, 57:]
-    features = data[:, :57]
+    cutoff = data.shape[1] - 1
+    targets = data[:, cutoff:]
+    features = data[:, :cutoff]
     return (targets, features)
 
 def standardize(features, mean=None, std=None):
@@ -122,4 +125,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
