@@ -33,8 +33,9 @@ def main():
     train_x, train_y, test_x, test_y  = handle_data(data)
 
     groups = train(train_x, train_y)
+    limit = train_x.shape[1]
 
-    tree = dtl(groups, list(range(0,57)))
+    tree = dtl(groups, list(range(0,limit)))
 
     labels = []
     for i, obs in enumerate(test_x):

@@ -13,10 +13,10 @@ class Node(object):
     def add_right_child(self, obj):
         self.right_child = obj
 
-def entropy_helper(frac):
+def entropy_helper(frac, log_base):
     if frac == 0:
         return 0
-    return -(frac) * math.log(frac, 2)
+    return -(frac) * math.log(frac, log_base)
 
 def calculate_entropy(subsets, total):
     avg_entropy = 0
@@ -30,8 +30,9 @@ def calculate_entropy(subsets, total):
             subset_len += len(val)
 
         if subset_len:
+            log_base = len(branch.items())
             for key, val in branch.items():
-                entropy += entropy_helper(len(val) / subset_len)
+                entropy += entropy_helper(len(val) / subset_len, log_base)
 
         avg_entropy += (subset_len / total ) * entropy
     return avg_entropy
@@ -51,12 +52,15 @@ def choose_best(groups, feature_list):
         subsets = initialize_subsets(groups)
         total = 0
         for key, val in groups.items():
-            class_features = val[:, i]
-            for j, feature in enumerate(class_features):
-                if feature < 0:
-                    subsets['F'][key].append(val[j])
-                else:
-                    subsets['T'][key].append(val[j])
+            class_features = []
+
+            if len(val):
+                class_features = val[:, i]
+                for j, feature in enumerate(class_features):
+                    if feature < 0:
+                        subsets['F'][key].append(val[j])
+                    else:
+                        subsets['T'][key].append(val[j])
 
             total += len(class_features)
             subsets['F'][key] = np.array(subsets['F'][key])
