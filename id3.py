@@ -132,6 +132,7 @@ def dtl(observations, features, default=0):
 
     best_attribute = choose_best(observations, features)
     feature_ind = best_attribute[1]
+    print("feature_ind", feature_ind)
 
     tree = Node(feature_ind)
 

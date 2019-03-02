@@ -34,11 +34,12 @@ def calculate_entropy_multi(subsets, total):
         for key, val in branch.items():
             subset_len += len(val)
 
-        for key, val in branch.items():
-            entropy += entropy_helper(len(val) / subset_len)
+        if subset_len:
+            for key, val in branch.items():
+                entropy += entropy_helper(len(val) / subset_len)
 
         avg_entropy += (subset_len / total ) * entropy
-        print("avg_entropy", avg_entropy)
+    return avg_entropy
 
 def calculate_entropy(spam_subsets, not_spam_subsets, total, k=2):
     avg_entropy = 0
@@ -69,6 +70,7 @@ def initialize_subsets(groups):
 
 
 def choose_best_multi(groups, feature_list):
+    node = (1, None, {})
     for i in feature_list:
         subsets = initialize_subsets(groups)
         total = 0
@@ -81,10 +83,13 @@ def choose_best_multi(groups, feature_list):
                     subsets['T'][key].append(val[j])
 
             total += len(class_features)
-            #subsets[key] = branches
+            subsets['F'][key] = np.array(subsets['F'][key])
+            subsets['T'][key] = np.array(subsets['T'][key])
 
         feature_entropy = calculate_entropy_multi(subsets, total)
-        print("feature_entropy", feature_entropy)
+        if feature_entropy <= node[0]:
+            node = (feature_entropy, i, subsets)
+    return node
 
 
 def choose_best(observations, feature_list):
@@ -124,6 +129,8 @@ def choose_best(observations, feature_list):
 
 def dtl(groups, features, default=0):
     observations = [groups[0], groups[1]]
+    #observations = []
+
 
     if not len(observations):
         return Node(default)
@@ -137,32 +144,22 @@ def dtl(groups, features, default=0):
         else:
             return Node(1)
 
-    #observations = [not_spam, spam]
-    #best_attribute = choose_best(observations, features)
-    best_mult_attribute = choose_best_multi(groups, features)
-
-    return
-
-
-    feature_ind = best_attribute[1]
-
+    best_multi_attribute = choose_best_multi(groups, features)
+    feature_ind = best_multi_attribute[1]
 
     tree = Node(feature_ind)
+    subsets = best_multi_attribute[2]
 
-    spam_subsets, not_spam_subsets = best_attribute[2], best_attribute[3]
-
-    for i in (0, 1):
+    for i in ('F', 'T'):
         new_features = features.copy()
         new_features.remove(feature_ind)
-        spam = np.array(spam_subsets[i])
-        not_spam = np.array(not_spam_subsets[i])
 
-        observations = [not_spam, spam]
+        groups = subsets[i]
 
-        if i == 0:
-            tree.add_left_child(dtl(observations, new_features))
+        if i == 'F':
+            tree.add_left_child(dtl(groups, new_features))
         else:
-            tree.add_right_child(dtl(observations, new_features))
+            tree.add_right_child(dtl(groups, new_features))
 
     return tree
 
@@ -211,11 +208,8 @@ def main():
     subsets = initialize_subsets(groups)
 
     observations = [not_spam, spam]
-    tree = dtl(groups, [0])
-    return
-    #tree = dtl(groups, list(range(0,57)))
-
-    #return
+    #tree = dtl(groups, [0])
+    tree = dtl(groups, list(range(0,57)))
 
     #observations = [not_spam, spam]
     #tree = dtl(observations, list(range(0,57)))
