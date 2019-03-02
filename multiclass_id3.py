@@ -23,6 +23,23 @@ def entropy_helper(frac):
         return 0
     return -(frac) * math.log(frac, 2)
 
+def calculate_entropy_multi(subsets, total):
+    avg_entropy = 0
+
+    for letter in subsets:
+        branch = subsets[letter]
+        subset_len = 0
+        entropy = 0
+
+        for key, val in branch.items():
+            subset_len += len(val)
+
+        for key, val in branch.items():
+            entropy += entropy_helper(len(val) / subset_len)
+
+        avg_entropy += (subset_len / total ) * entropy
+        print("avg_entropy", avg_entropy)
+
 def calculate_entropy(spam_subsets, not_spam_subsets, total, k=2):
     avg_entropy = 0
 
@@ -41,24 +58,33 @@ def calculate_entropy(spam_subsets, not_spam_subsets, total, k=2):
 
     return avg_entropy
 
+def initialize_subsets(groups):
+    subsets = { 'T': {}, 'F': {}}
+
+    for key in groups:
+        subsets['T'][key] = []
+        subsets['F'][key] = []
+
+    return subsets
+
 
 def choose_best_multi(groups, feature_list):
-
-    print("groups", groups)
-
-    subsets = {}
     for i in feature_list:
+        subsets = initialize_subsets(groups)
+        total = 0
         for key, val in groups.items():
-            branches = { T: [], F: [] }
             class_features = val[:, i]
             for j, feature in enumerate(class_features):
                 if feature < 0:
-                    branches['F'].append(val[j])
+                    subsets['F'][key].append(val[j])
                 else:
-                    branches['T'].append(val[j])
+                    subsets['T'][key].append(val[j])
 
-            subsets[key] = branches
-    print("test", len(subsets[1]['T']))
+            total += len(class_features)
+            #subsets[key] = branches
+
+        feature_entropy = calculate_entropy_multi(subsets, total)
+        print("feature_entropy", feature_entropy)
 
 
 def choose_best(observations, feature_list):
@@ -87,10 +113,9 @@ def choose_best(observations, feature_list):
         spam_subsets = np.array(spam_subsets)
         not_spam_subsets = np.array(not_spam_subsets)
 
-        print(len(spam_subsets[0]))
-
         total = len(spam_features) + len(not_spam_features)
         feature_entropy = calculate_entropy(spam_subsets, not_spam_subsets, total)
+        print("feature entropy", feature_entropy)
 
         if feature_entropy <= node[0]:
             node = (feature_entropy, i, spam_subsets, not_spam_subsets)
@@ -113,8 +138,8 @@ def dtl(groups, features, default=0):
             return Node(1)
 
     #observations = [not_spam, spam]
-    best_attribute = choose_best(observations, features)
-    #best_mult_attribute = choose_best_multi(groups, features)
+    #best_attribute = choose_best(observations, features)
+    best_mult_attribute = choose_best_multi(groups, features)
 
     return
 
@@ -183,6 +208,8 @@ def main():
 
 
     #using groups
+    subsets = initialize_subsets(groups)
+
     observations = [not_spam, spam]
     tree = dtl(groups, [0])
     return
