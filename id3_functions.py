@@ -18,7 +18,7 @@ def entropy_helper(frac):
         return 0
     return -(frac) * math.log(frac, 2)
 
-def calculate_entropy_multi(subsets, total):
+def calculate_entropy(subsets, total):
     avg_entropy = 0
 
     for letter in subsets:
@@ -45,7 +45,7 @@ def initialize_subsets(groups):
 
     return subsets
 
-def choose_best_multi(groups, feature_list):
+def choose_best(groups, feature_list):
     node = (1, None, {})
     for i in feature_list:
         subsets = initialize_subsets(groups)
@@ -62,7 +62,7 @@ def choose_best_multi(groups, feature_list):
             subsets['F'][key] = np.array(subsets['F'][key])
             subsets['T'][key] = np.array(subsets['T'][key])
 
-        feature_entropy = calculate_entropy_multi(subsets, total)
+        feature_entropy = calculate_entropy(subsets, total)
         if feature_entropy <= node[0]:
             node = (feature_entropy, i, subsets)
     return node
@@ -95,7 +95,7 @@ def dtl(groups, features, default=0):
     if not len(features):
         return Node(int(mode_class(groups)))
 
-    best_multi_attribute = choose_best_multi(groups, features)
+    best_multi_attribute = choose_best(groups, features)
     feature_ind = best_multi_attribute[1]
 
     tree = Node(feature_ind)

@@ -127,16 +127,6 @@ def choose_best(observations, feature_list):
 
     return node
 
-def check_base_cases(groups, default=0):
-    num_examples = 0
-
-    for key, val in groups:
-        if len(val):
-            num_examples += len(val)
-
-    if not num_examples:
-        return Node(default)
-
 def classes_with_examples(groups):
     classes = []
     for key, val in groups.items():
@@ -154,9 +144,7 @@ def mode_class(groups):
     return max(class_counts, key=class_counts.get)
 
 def dtl(groups, features, default=0):
-    observations = [groups[0], groups[1]]
     classes = classes_with_examples(groups)
-    #observations = []
 
     if not len(classes):
         return Node(default)
@@ -164,17 +152,8 @@ def dtl(groups, features, default=0):
     if len(classes) == 1:
         return Node(int(classes[0]))
 
-    #if not len(observations[0]):
-    #    return Node(1)
-    #if not len(observations[1]):
-    #    return Node(0)
-
     if not len(features):
         return Node(int(mode_class(groups)))
-        #if len(observations[0]) > len(observations[1]):
-        #    return Node(0)
-        #else:
-        #    return Node(1)
 
     best_multi_attribute = choose_best_multi(groups, features)
     feature_ind = best_multi_attribute[1]

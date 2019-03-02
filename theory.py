@@ -3,6 +3,17 @@ import numpy as np
 
 np.set_printoptions(suppress=True)
 
+def pdf(x, mean, std):
+    pdf = (1 / (std * math.sqrt(2 * math.pi))) * math.exp(-( (x - mean) ** 2 ) / (2 * std ** 2))
+    return pdf
+
+#def pdf(x, mean, sd):
+#    var = float(sd)**2
+#    denom = (2*math.pi*var)**.5
+#    num = math.exp(-(float(x)-float(mean))**2/(2*var))
+#    return num/denom
+
+
 def standardize(features, mean=None, std=None):
     features = (features - mean) / std
     return features
@@ -46,10 +57,6 @@ print(orig_std)
 
 x = standardize_data(x)
 
-test = np.array([242, 4.56])
-test = standardize(test, orig_mean, orig_std)
-
-print(test)
 
 
 yes = []
@@ -70,3 +77,28 @@ yes_std = yes.std(axis=0)
 
 no_mean = no.mean(axis=0)
 no_std = no.std(axis=0)
+
+test = np.array([242, 4.56])
+test = standardize(test, orig_mean, orig_std)
+
+
+p_x1_yes = pdf(test[0], yes_mean[0], yes_std[0])
+p_x2_yes = pdf(test[1], yes_mean[1], yes_std[1])
+prob_yes = (3/5) * p_x1_yes * p_x2_yes
+
+p_x1_no = pdf(test[0], no_mean[0], no_std[0])
+p_x2_no = pdf(test[1], no_mean[1], no_std[1])
+prob_no = (2/5) * p_x1_no * p_x2_no
+
+print(p_x1_yes)
+print(p_x2_yes)
+
+print(p_x1_no)
+print (p_x2_no)
+
+print("\n")
+print("prob yes", prob_yes)
+print("prob no", prob_no)
+
+print("true prob", prob_yes / (prob_yes + prob_no))
+print("true no porb", prob_no / (prob_no + prob_yes))
