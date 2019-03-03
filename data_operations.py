@@ -25,7 +25,7 @@ def standardize(features, mean=None, std=None):
     return features
 
 def handle_data(data):
-    np.random.seed(1)
+    np.random.seed(2)
     np.random.shuffle(data)
 
     range = ceil(len(data) * 2/3)
