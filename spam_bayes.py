@@ -1,5 +1,5 @@
 import numpy as np
-from bayes_functions import classify, train
+from bayes_operations import classify, train
 from data_operations import filter_low_std, handle_data
 
 def display_performance(labels, test_y):

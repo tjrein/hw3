@@ -1,6 +1,6 @@
 import numpy as np
-from data_operations import handle_data
-from id3_functions import train, dtl, traverse_tree
+from data_operations import handle_data, filter_low_std
+from id3_operations import train, dtl, traverse_tree
 
 def display_performance(labels, test_y):
     tp = 0
@@ -30,6 +30,7 @@ def display_performance(labels, test_y):
 
 def main():
     data = np.genfromtxt('./spambase.data', delimiter=',')
+    data = filter_low_std(data)
     train_x, train_y, test_x, test_y  = handle_data(data)
 
     groups = train(train_x, train_y)

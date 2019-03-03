@@ -1,6 +1,6 @@
 import numpy as np
 from data_operations import filter_low_std, handle_data
-from id3_functions import train, dtl, traverse_tree
+from id3_operations import train, dtl, traverse_tree
 
 def display_performance(labels, test_y):
     correct = 0
