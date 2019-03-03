@@ -73,10 +73,10 @@ yes = np.array(yes)
 no = np.array(no)
 
 yes_mean = yes.mean(axis=0)
-yes_std = yes.std(axis=0)
+yes_std = yes.std(axis=0, ddof=1)
 
 no_mean = no.mean(axis=0)
-no_std = no.std(axis=0)
+no_std = no.std(axis=0, ddof=1)
 
 test = np.array([242, 4.56])
 test = standardize(test, orig_mean, orig_std)

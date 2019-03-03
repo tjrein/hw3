@@ -99,11 +99,11 @@ def dtl(groups, features, default=0):
     if not len(features):
         return Node(int(mode_class(groups)))
 
-    best_multi_attribute = choose_best(groups, features)
-    feature_ind = best_multi_attribute[1]
+    best_attribute = choose_best(groups, features)
+    feature_ind = best_attribute[1]
 
     tree = Node(feature_ind)
-    subsets = best_multi_attribute[2]
+    subsets = best_attribute[2]
 
     for i in ('F', 'T'):
         new_features = features.copy()

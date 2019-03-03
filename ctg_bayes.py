@@ -1,21 +1,7 @@
 import numpy as np
 from bayes_operations import classify, train
 from data_operations import filter_low_std, handle_data
-
-def display_performance(labels, test_y):
-    correct = 0
-    incorrect = 0
-    for x, prediction in enumerate(labels):
-        target = test_y[x]
-
-        if target == prediction:
-            correct += 1
-        else:
-            incorrect += 1
-
-    accuracy = correct / (incorrect + correct)
-
-    print("Accuracy: ", accuracy)
+from display_operations import display_multiclass_performance
 
 def main():
     data = np.genfromtxt('./CTG.csv', delimiter=',', skip_header=2)
@@ -27,7 +13,7 @@ def main():
 
     groups = train(train_x, train_y)
     labels = np.array(classify(groups, test_x))
-    display_performance(labels, test_y)
+    display_multiclass_performance(labels, test_y)
 
 if __name__ == "__main__":
     main()
