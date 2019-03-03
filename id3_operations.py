@@ -87,11 +87,11 @@ def mode_class(groups):
 
     return max(class_counts, key=class_counts.get)
 
-def dtl(groups, features, default=0):
+def dtl(groups, features, default):
     classes = classes_with_examples(groups)
 
     if not len(classes):
-        return Node(default)
+        return Node(int(default))
 
     if len(classes) == 1:
         return Node(int(classes[0]))
@@ -111,9 +111,9 @@ def dtl(groups, features, default=0):
         groups = subsets[i]
 
         if i == 'F':
-            tree.add_left_child(dtl(groups, new_features))
+            tree.add_left_child(dtl(groups, new_features, default))
         else:
-            tree.add_right_child(dtl(groups, new_features))
+            tree.add_right_child(dtl(groups, new_features, default))
 
     return tree
 

@@ -1,7 +1,7 @@
 import numpy as np
 import sys
 from data_operations import handle_data, filter_low_std, get_data_file
-from id3_operations import train, dtl, traverse_tree
+from id3_operations import train, dtl, traverse_tree, mode_class
 from display_operations import display_binary_performance
 
 def main():
@@ -12,9 +12,10 @@ def main():
     train_x, train_y, test_x, test_y  = handle_data(data)
 
     groups = train(train_x, train_y)
+    default = mode_class(groups)
     limit = train_x.shape[1]
 
-    tree = dtl(groups, list(range(0,limit)))
+    tree = dtl(groups, list(range(0,limit)), default)
 
     labels = []
     for i, obs in enumerate(test_x):
