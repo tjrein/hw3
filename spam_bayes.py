@@ -1,10 +1,13 @@
 import numpy as np
+import sys
 from bayes_operations import classify, train
-from data_operations import filter_low_std, handle_data
+from data_operations import filter_low_std, handle_data, get_data_file
 from display_operations import display_binary_performance
 
 def main():
-    data = np.genfromtxt('./spambase.data', delimiter=',')
+    args = sys.argv
+    filename = get_data_file(args, './spambase.data')
+    data = np.genfromtxt(filename, delimiter=',')
     data = filter_low_std(data)
 
     train_x, train_y, test_x, test_y = handle_data(data)

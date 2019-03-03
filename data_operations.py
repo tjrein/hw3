@@ -1,4 +1,5 @@
 import numpy as np
+import os.path
 from math import ceil
 
 def isolate_sets(training, testing):
@@ -40,3 +41,10 @@ def filter_low_std(data):
     data = np.delete(data, remove, 1)
 
     return data
+
+def get_data_file(args, default):
+    filename = default
+    if len(args) > 1:
+        if os.path.isfile(args[1]):
+            filename = args[1]
+    return filename

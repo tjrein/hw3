@@ -1,10 +1,13 @@
 import numpy as np
-from data_operations import filter_low_std, handle_data
+import sys
+from data_operations import filter_low_std, handle_data, get_data_file
 from id3_operations import train, dtl, traverse_tree
 from display_operations import display_multiclass_performance
 
 def main():
-    data = np.genfromtxt('./CTG.csv', delimiter=',', skip_header=2)
+    args = sys.argv
+    filename = get_data_file(args, './CTG.csv')
+    data = np.genfromtxt(filename, delimiter=',', skip_header=2)
     second_last_col = data.shape[1] - 2
     data = np.delete(data, second_last_col, 1)
     data = filter_low_std(data)

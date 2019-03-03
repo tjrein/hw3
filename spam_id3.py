@@ -1,10 +1,13 @@
 import numpy as np
-from data_operations import handle_data, filter_low_std
+import sys
+from data_operations import handle_data, filter_low_std, get_data_file
 from id3_operations import train, dtl, traverse_tree
 from display_operations import display_binary_performance
 
 def main():
-    data = np.genfromtxt('./spambase.data', delimiter=',')
+    args = sys.argv
+    filename = get_data_file(args, './spambase.data')
+    data = np.genfromtxt(filename, delimiter=',')
     data = filter_low_std(data)
     train_x, train_y, test_x, test_y  = handle_data(data)
 
