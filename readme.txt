@@ -12,14 +12,16 @@
   That being said, the only real dependency is numpy.
 
 ==== Files Included ====
-  * data_operations.py
-  * display_operations.py
-  * id3_operations.py
-  * bayes_operations.py
   * spam_bayes.py
   * spam_id3.py
   * ctg_bayes.py
   * ctg_id3.py
+
+  * bayes_operations.py
+  * id3_operations.py
+  * data_operations.py
+  * display_operations.py
+
   * requirements.txt
   * spambase.data
   * CTG.csv
