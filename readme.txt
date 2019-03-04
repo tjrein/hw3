@@ -75,7 +75,7 @@
   * Reads in data from CTG.csv, ignoring first two header rows and removing 2nd to last column
   * Performs an initial pass on the data and filters out features with a standard deviation < 0.1
   * Implements Gaussian Naive Bayes classification on the test data.
-  * Builds an ID# decision tree and classifies test data.
+  * Builds an ID3 decision tree and classifies test data.
   * Outputs Naive Bayes Accuracy and ID3 Accuracy
 
   To execute:
