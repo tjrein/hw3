@@ -14,8 +14,7 @@
 ==== Files Included ====
   * spam_bayes.py
   * spam_id3.py
-  * ctg_bayes.py
-  * ctg_id3.py
+  * ctg_evaluation.py
 
   * bayes_operations.py
   * id3_operations.py
@@ -35,11 +34,11 @@
   The scripts that actually implement the classifications are:
     * spam_bayes.py
     * spam_id3.py
-    * ctg_bayes.py
-    * ctg_id3.py
+    * ctg_evaluation.py
 
     The prefix of these files indicate what data set is used, i.e. 'spam' for spambase.data and 'ctg' for CTG.csv
     The suffix of these files indicate which classifier is used.
+    The 'evaluation' suffix indicates that both classifiers are used.
 
 
 ==== spam_bayes.py ====
@@ -72,35 +71,21 @@
   By default, this script will use './spambase.data' as the path if no argument is passed
 
 
-==== ctg_bayes.py ====
+==== ctg_evaluation.py ====
   * Reads in data from CTG.csv, ignoring first two header rows and removing 2nd to last column
   * Performs an initial pass on the data and filters out features with a standard deviation < 0.1
   * Implements Gaussian Naive Bayes classification on the test data.
-  * Outputs Accuracy
+  * Builds an ID# decision tree and classifies test data.
+  * Outputs Naive Bayes Accuracy and ID3 Accuracy
 
   To execute:
-    > python3 ctg_bayes.py
+    > python3 ctg_evaluation.py
 
   Alternatively, an optional argument can be passed to specify the path to a file:
-    > python3 ctg_bayes.py {path_to_file}
+    > python3 ctg_evaluation.py {path_to_file}
+
 
   By default, this script will use './CTG.csv' as the path if no argument is passed
-
-
-==== ctg_id3.py ====
-  * Reads in data from CTG.csv, ignoring first two header rows and removing 2nd to last column
-  * Performs an initial pass on the data and filters out features with a standard deviation < 0.1
-  * Builds an ID3 decision tree and classifies the test data.
-  * Outputs Accuracy
-
-  To execute:
-    > python3 ctg_id3.py
-
-  Alternatively, an optional argument can be passed to specify the path to a file:
-    > python3 ctg_id3.py {path_to_file}
-
-  By default, this script will use './CTG.csv' as the path if no argument is passed
-
 
 ==== bayes_operations.py ====
   Contains shared functions for Gaussian Naive Bayes Classification.
