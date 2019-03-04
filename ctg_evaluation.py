@@ -32,7 +32,6 @@ def main():
     data = filter_low_std(data)
 
     train_x, train_y, test_x, test_y = handle_data(data)
-
     perform_gnb(train_x, train_y, test_x, test_y)
     perform_id3(train_x, train_y, test_x, test_y)
 

@@ -24,7 +24,7 @@ def display_binary_performance(labels, test_y):
     print ("F-measure:", (2 * precision * recall) / (precision + recall))
     print ("Accuracy:", (tp + tn) / (tp + tn + fp + fn))
 
-def display_multiclass_performance(labels, test_y):
+def display_multiclass_performance(labels, test_y, classifier):
     correct = 0
     incorrect = 0
     for x, prediction in enumerate(labels):
@@ -37,4 +37,4 @@ def display_multiclass_performance(labels, test_y):
 
     accuracy = correct / (incorrect + correct)
 
-    print("Accuracy:", accuracy)
+    print(classifier + " Accuracy:", accuracy)
