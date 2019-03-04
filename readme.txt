@@ -30,7 +30,7 @@
         I have included the datasets in the .zip, so the scripts should work out of the box.
 
 ==== General Overview ====
-  That files that have a suffix of operations are all shared functions used by various scripts.
+  That files that have an "operations" suffix are all shared functions used by various scripts.
 
   The scripts that actually implement the classifications are:
     * spam_bayes.py
